@@ -24,7 +24,6 @@ def hello_world():
 
 
 def getUploadDir():
-    print(platform.system())
     if (platform.system() == 'Windows'):
         uploadDir = 'D:\jx\py\img2pdf\img'
     else:
@@ -39,7 +38,17 @@ def imgToPdf():
     :return:
     '''
     imgurl = request.args.get('imgurl', '')
-    filename = topdf(imgurl)
+    x=request.args.get('x',0)
+    y=request.args.get('y',0)
+    if x=='':
+        x=0
+    if y=='':
+        y=0
+    x=int(x)
+    y=int(y)
+    print('x='+str(x))
+    print('y='+str(y))
+    filename = topdf(imgurl,x,y)
     return send_from_directory(directory=getUploadDir(),
                                filename=filename,
                                mimetype='application/pdf')
@@ -64,7 +73,7 @@ def download_img(img_url, uuidName):
     return None
 
 
-def topdf(image_file: str):
+def topdf(image_file: str,left=0,top=0):
     # image_file: str = "./test.png"
     # image_file = "https://zyai.jxwifi.com/uploads/20201203/ae26751e48348f0765322f9eb26a5a32.png"
 
@@ -81,12 +90,12 @@ def topdf(image_file: str):
         p.paste(im, (0, 0, x, y), im)
         savePath = getUploadDir() + "/" + uuidName + '.png';
         p.save(savePath)
-        c.drawImage(savePath, 0, 0, width, height)
+        c.drawImage(savePath, left, top, width, height)
     else:
-        c.drawImage(image_file, 0, 0, width, height)
-        c.drawInlineImage(image_file, 0, 0)
+        #c.drawImage(image_file, 0, 0, width, height)
+        #c.drawInlineImage(image_file, 0, 0)
         # c.showPage()
-        c.drawImage(image_file, 0, 0, width, height)
+        c.drawImage(image_file, left, top, width, height)
     c.save()
     return pdfName;
 
